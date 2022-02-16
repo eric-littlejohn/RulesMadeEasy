@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace RulesMadeEasy.Extensions.Tests
+namespace RulesMadeEasy.Core.Tests
 {
     internal class TypeMappedAction : AutoMappedAction
     {

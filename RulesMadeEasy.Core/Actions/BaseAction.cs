@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace RulesMadeEasy.Extensions
+namespace RulesMadeEasy.Core
 {
     public abstract class BaseAction : IAction
     {

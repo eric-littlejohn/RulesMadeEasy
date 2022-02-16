@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RulesMadeEasy.Extensions
+namespace RulesMadeEasy.Core
 {
     /// <summary>
     /// The attribute is used to decorate properties that are to be auto mapped using the data values recieved by the action instance

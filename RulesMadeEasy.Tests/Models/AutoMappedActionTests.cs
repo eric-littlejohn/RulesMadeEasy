@@ -4,9 +4,9 @@ using System;
 using System.Text;
 using Xunit;
 
-namespace RulesMadeEasy.Extensions.Tests
+namespace RulesMadeEasy.Core.Tests
 {
-    public partial class AutoMappedActionTests
+    public class AutoMappedActionTests
     {
         [Fact]
         public void Ctor_MapsDecoratedProperties_NoDataValueFoundForNonNullableProperty_Throws()

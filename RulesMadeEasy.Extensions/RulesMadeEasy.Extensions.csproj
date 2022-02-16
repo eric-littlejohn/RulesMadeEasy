@@ -8,4 +8,8 @@
     <ProjectReference Include="..\RulesMadeEasy.Core\RulesMadeEasy.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Actions\" />
+  </ItemGroup>
+
 </Project>

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RulesMadeEasy.Extensions.Tests
+namespace RulesMadeEasy.Core.Tests
 {
     internal class ComplexObject
     {
