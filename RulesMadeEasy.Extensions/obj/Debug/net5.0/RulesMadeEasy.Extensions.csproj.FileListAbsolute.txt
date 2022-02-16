@@ -1,0 +1,15 @@
+C:\Users\erlittle\source\repos\RulesMadeEasy\RulesMadeEasy.Extensions\bin\Debug\net5.0\RulesMadeEasy.Extensions.deps.json
+C:\Users\erlittle\source\repos\RulesMadeEasy\RulesMadeEasy.Extensions\bin\Debug\net5.0\RulesMadeEasy.Extensions.dll
+C:\Users\erlittle\source\repos\RulesMadeEasy\RulesMadeEasy.Extensions\bin\Debug\net5.0\ref\RulesMadeEasy.Extensions.dll
+C:\Users\erlittle\source\repos\RulesMadeEasy\RulesMadeEasy.Extensions\bin\Debug\net5.0\RulesMadeEasy.Extensions.pdb
+C:\Users\erlittle\source\repos\RulesMadeEasy\RulesMadeEasy.Extensions\bin\Debug\net5.0\RulesMadeEasy.dll
+C:\Users\erlittle\source\repos\RulesMadeEasy\RulesMadeEasy.Extensions\bin\Debug\net5.0\RulesMadeEasy.pdb
+C:\Users\erlittle\source\repos\RulesMadeEasy\RulesMadeEasy.Extensions\obj\Debug\net5.0\RulesMadeEasy.Extensions.csproj.AssemblyReference.cache
+C:\Users\erlittle\source\repos\RulesMadeEasy\RulesMadeEasy.Extensions\obj\Debug\net5.0\RulesMadeEasy.Extensions.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\erlittle\source\repos\RulesMadeEasy\RulesMadeEasy.Extensions\obj\Debug\net5.0\RulesMadeEasy.Extensions.AssemblyInfoInputs.cache
+C:\Users\erlittle\source\repos\RulesMadeEasy\RulesMadeEasy.Extensions\obj\Debug\net5.0\RulesMadeEasy.Extensions.AssemblyInfo.cs
+C:\Users\erlittle\source\repos\RulesMadeEasy\RulesMadeEasy.Extensions\obj\Debug\net5.0\RulesMadeEasy.Extensions.csproj.CoreCompileInputs.cache
+C:\Users\erlittle\source\repos\RulesMadeEasy\RulesMadeEasy.Extensions\obj\Debug\net5.0\RulesMadeEasy.Extensions.csproj.CopyComplete
+C:\Users\erlittle\source\repos\RulesMadeEasy\RulesMadeEasy.Extensions\obj\Debug\net5.0\RulesMadeEasy.Extensions.dll
+C:\Users\erlittle\source\repos\RulesMadeEasy\RulesMadeEasy.Extensions\obj\Debug\net5.0\ref\RulesMadeEasy.Extensions.dll
+C:\Users\erlittle\source\repos\RulesMadeEasy\RulesMadeEasy.Extensions\obj\Debug\net5.0\RulesMadeEasy.Extensions.pdb
