@@ -44,6 +44,11 @@ namespace RulesMadeEasy.Core
             /// No rule engine instance provided when creating a new <see cref="BaseAction"/>
             /// </summary>
             NoServiceProviderInstanceProvided = 5,
+
+            /// <summary>
+            /// Cannot instantiate an instance of the action.
+            /// </summary>
+            CannotInstantiateAction = 6,
         }
 
         /// <summary>

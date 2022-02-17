@@ -49,11 +49,11 @@ namespace RulesMadeEasy.Extensions
         IRuleBuilder CreateNotInCondition<T>(string valueKey, params T[] notAllowedValues);
 
         /// <summary>
-        /// Sets the provided <see cref="IRuleAction"/> to be built when the <see cref="IRule"/> is created
+        /// Sets the provided <see cref="IAction"/> to be built when the <see cref="IRule"/> is created
         /// </summary>
-        /// <param name="condition">The identifier of the action to add</param>
+        /// <param name="actionKey">The identifier of the action to add</param>
         /// <returns>The current <see cref="IRuleBuilder"/>instance </returns>
-        IRuleBuilder AddRuleAction(Guid action);
+        IRuleBuilder AddRuleAction(object actionKey);
 
         /// <summary>
         /// Builds out an instance of an <see cref="IRule"/>

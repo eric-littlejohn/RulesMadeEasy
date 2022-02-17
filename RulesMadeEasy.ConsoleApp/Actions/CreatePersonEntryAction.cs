@@ -8,8 +8,6 @@ namespace RulesMadeEasy.ConsoleApp
 {
     public class CreatePersonEntryAction : AutoMappedAction
     {
-        public static Guid ActionId = Guid.NewGuid(); //Normally this would be a hard coded consistant value for referencing by rules
-
         [ActionDataValueProperty(nameof(Person.Name), AllowNull = false)]
         public string PersonName { get; set; }
 

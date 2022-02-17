@@ -23,6 +23,11 @@ namespace RulesMadeEasy.ConsoleApp
 
             var provider = RegisterServices(services);
 
+            var actionFactory = provider.GetRequiredService<IActionFactory>();
+
+            actionFactory.RegisterAction<CreatePersonEntryAction>(nameof(CreatePersonEntryAction));
+            actionFactory.RegisterAction<MarkAsChildAction>(nameof(MarkAsChildAction));
+
             var engine = provider.GetRequiredService<IRulesMadeEasyEngine>();
 
             //Get the rules
@@ -32,12 +37,12 @@ namespace RulesMadeEasy.ConsoleApp
 
             //This rule will fire for each evaluation
             rules.Add(ruleBuilder
-                .AddRuleAction(CreatePersonEntryAction.ActionId)
+                .AddRuleAction(nameof(CreatePersonEntryAction))
                 .Build());
 
             rules.Add(ruleBuilder
                 .AddValueCondition(ConditionOperator.LessThan, nameof(Person.Age), 18)
-                .AddRuleAction(MarkAsChildAction.ActionId)
+                .AddRuleAction(nameof(MarkAsChildAction))
                 .Build());
 
             //Evaluate data object
@@ -69,7 +74,7 @@ namespace RulesMadeEasy.ConsoleApp
                 Console.WriteLine($"\tRule {j + 1} Passed: {ruleEvalResult.RulePassed}");
                 foreach (var actionExecutionResult in ruleEvalResult.ActionExecutionResults)
                 {
-                    Console.WriteLine($"\t\tAction fired: {actionExecutionResult.ActionId}");
+                    Console.WriteLine($"\t\tAction fired: {actionExecutionResult.ActionKey}");
                 }
             }
             Console.WriteLine("------------------------------------");
@@ -78,25 +83,11 @@ namespace RulesMadeEasy.ConsoleApp
         //TODO: Support loading these dependencies from a configuration file in addition to in code
         private static IServiceProvider RegisterServices(ServiceCollection services)
         {
-            //Register supported value types
-            IValueEvaluatorFactory valueEvaluatorFactory = new ValueEvaluatorFactory();
-
-            IActionFactory actionFactory = new ActionFactory();
-
-            RegisterActions(actionFactory);
-
             services.AddSingleton<IRulesMadeEasyEngine, RulesMadeEasyEngine>()
-                    .AddSingleton(valueEvaluatorFactory)
-                    .AddSingleton(actionFactory);
+                    .AddSingleton<IActionFactory, ActionFactory>()
+                    .AddSingleton<IValueEvaluatorFactory, ValueEvaluatorFactory>();
 
             return services.BuildServiceProvider();
-        }
-
-        //TODO: allow for scanning of loaded assemblies for "IAction"s to auto register
-        private static void RegisterActions(IActionFactory actionFactory)
-        {
-            actionFactory.RegisterAction(CreatePersonEntryAction.ActionId, (s, e, dv) => new CreatePersonEntryAction(s, e, dv));
-            actionFactory.RegisterAction(MarkAsChildAction.ActionId, (s, e, dv) => new MarkAsChildAction(s, e, dv));
         }
 
         private static IEnumerable<IDataValue> ExtractDataValues(Person obj)

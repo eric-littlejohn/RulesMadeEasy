@@ -8,8 +8,6 @@ namespace RulesMadeEasy.ConsoleApp
 {
     public class MarkAsChildAction : BaseAction
     {
-        public static Guid ActionId = Guid.NewGuid();  //Normally this would be a hard coded consistant value for referencing by rules
-
         public string ChildName { get; }
 
         public MarkAsChildAction(IServiceProvider serviceProvider, IRulesMadeEasyEngine engineInstance, IEnumerable<IDataValue> dataValues)

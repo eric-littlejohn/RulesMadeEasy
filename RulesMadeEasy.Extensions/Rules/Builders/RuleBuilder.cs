@@ -15,7 +15,7 @@ namespace RulesMadeEasy.Extensions
         /// <summary>
         /// Contains the collection of identifiers of the actions of the new <see cref="IRule"/> will be built with
         /// </summary>
-        protected virtual List<Guid> RuleActionIdentifiers { get; private set; } = new List<Guid>();
+        protected virtual List<object> RuleActionIdentifiers { get; private set; } = new List<object>();
 
         /// <inheritdoc />
         public IRuleBuilder AddRuleCondition(IRuleCondition condition)
@@ -69,9 +69,9 @@ namespace RulesMadeEasy.Extensions
         }
 
         /// <inheritdoc />
-        public IRuleBuilder AddRuleAction(Guid action)
+        public IRuleBuilder AddRuleAction(object actionKey)
         {
-            RuleActionIdentifiers.Add(action);
+            RuleActionIdentifiers.Add(actionKey);
 
             return this;
         }
@@ -89,7 +89,7 @@ namespace RulesMadeEasy.Extensions
         private void Reset()
         {
             RuleConditions = new List<IRuleCondition>();
-            RuleActionIdentifiers = new List<Guid>();
+            RuleActionIdentifiers = new List<object>();
         }
     }
 }

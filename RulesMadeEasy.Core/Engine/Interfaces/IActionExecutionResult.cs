@@ -10,9 +10,9 @@ namespace RulesMadeEasy.Core
         ActionExecutionException Exception { get; }
 
         /// <summary>
-        /// The identifier of the action that was executed
+        /// The key of the action that was executed
         /// </summary>
-        Guid ActionId { get; }
+        object ActionKey { get; }
 
         /// <summary>
         /// Whether or not the action executed successfully

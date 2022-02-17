@@ -23,36 +23,21 @@ namespace RulesMadeEasy.Core
         protected IActionFactory ActionFactory { get; }
 
         /// <summary>
-        /// <see cref="IServiceProvider"/> used to retrieve external services
-        /// </summary>
-        protected IServiceProvider ServiceProvider { get; }
-
-        /// <summary>
         /// Creates a new instance of a <see cref="RulesMadeEasyEngine"/>
         /// </summary>
-        /// <param name="serviceProvider">The service provider used to get external services needed by the engine</param>
         /// <param name="valueFactory">The <see cref="IValueEvaluatorFactory"/> used to get the <see cref="IValueEvaluator"/>s that can evaluate the supported value types</param>
         /// <param name="actionFactory">The <see cref="IActionFactory"/> used to create action instances to invoke.</param>
-        public RulesMadeEasyEngine(IServiceProvider serviceProvider, IValueEvaluatorFactory valueFactory, IActionFactory actionFactory)
+        public RulesMadeEasyEngine(IValueEvaluatorFactory valueFactory, IActionFactory actionFactory)
         {
-            ServiceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider),
-                                  "A null service provider was passed to the rules engine instance");
             ValueEvaluatorFactory = valueFactory ?? throw new ArgumentNullException(nameof(valueFactory),
                                   "A null value factory was passed to the rules engine instance"); ;
             ActionFactory = actionFactory ?? throw new ArgumentNullException(nameof(actionFactory),
                                   "A null action factory was passed to the rules engine instance"); ;
         }
 
-        /// <summary>
-        /// Evaluates the trigger instance against the rules provided
-        /// </summary>
-        /// <param name="evaluationMode">The evaluation mode in which to evaluate the rules in</param>
-        /// <param name="dataValues">The data values that are to be evaluated</param>
-        /// <param name="rules">The rules that the trigger will be evaluated against</param>
-        /// <param name="cancellationToken">A cancellation token used for exiting evaulation early</param>
-        /// <returns>An <see ref="IEvaluationResult" /> detailing the evaluation results</returns>
+        /// <inheritdoc />
         public async Task<IRulesMadeEasySessionResult> EvaluateRules(RuleEngineEvaluationMode evaluationMode, IEnumerable<IDataValue> dataValues, IEnumerable<IRule> rules,
-            CancellationToken cancellationToken = default(CancellationToken))
+        CancellationToken cancellationToken = default(CancellationToken))
         {
             var engineEvaluationResult = new RulesMadeEasySessionResult
             {
@@ -388,12 +373,12 @@ namespace RulesMadeEasy.Core
 
         protected virtual async Task<IActionExecutionResult> ExecuteRuleAction(RuleEngineEvaluationMode evaluationMode,
             IEnumerable<IDataValue> dataValues,
-            Guid actionId,
+            object actionKey,
             bool stopActionExecution)
         {
             var actionExecutionResult = new ActionExecutionResult
             {
-                ActionId = actionId
+                ActionKey = actionKey
             };
 
             if (stopActionExecution)
@@ -405,12 +390,12 @@ namespace RulesMadeEasy.Core
             {
                 try
                 {
-                    var actionInstance = ActionFactory.GetActionInstance(actionId, ServiceProvider, this, dataValues);
+                    var actionInstance = ActionFactory.GetActionInstance(actionKey, this, dataValues);
 
                     if (actionInstance == null)
                     {
                         throw new ActionExecutionException(ActionExecutionException.ExceptionCause.ActionNotFound,
-                            $"No action found for id {actionId}. Unable to execute action.");
+                            $"No action found with key {actionKey}. Unable to execute action.");
                     }
 
                     actionExecutionResult.ActionRan = true;

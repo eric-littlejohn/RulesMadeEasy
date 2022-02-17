@@ -17,12 +17,12 @@ namespace RulesMadeEasy.Core
         /// <summary>
         /// The identifiers of the actions of the rule to be fired
         /// </summary>
-        public IEnumerable<Guid> ActionIdentifiers { get; }
+        public IEnumerable<object> ActionIdentifiers { get; }
 
-        public Rule(IEnumerable<IRuleCondition> conditions, IEnumerable<Guid> actionIdentifiers)
+        public Rule(IEnumerable<IRuleCondition> conditions, IEnumerable<object> actionIdentifiers)
         {
             Conditions = conditions ?? new List<IRuleCondition>();
-            ActionIdentifiers = actionIdentifiers ?? new List<Guid>();
+            ActionIdentifiers = actionIdentifiers ?? new List<object>();
         }
     }
 }

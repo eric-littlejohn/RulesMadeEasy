@@ -16,6 +16,6 @@ namespace RulesMadeEasy.Core
         /// <summary>
         /// The identifiers of the actions of the rule to be fired
         /// </summary>
-        IEnumerable<Guid> ActionIdentifiers { get; }
+        IEnumerable<object> ActionIdentifiers { get; }
     }
 }
