@@ -195,11 +195,11 @@ namespace RulesMadeEasy.Extensions.Tests
         [Fact]
         public void AddRuleAction_Success()
         {
-            List<Guid> builderActions = new List<Guid>();
+            List<object> builderActions = new List<object>();
 
             var mockedRuleBuilder = new Mock<RuleBuilder>() { CallBase = true };
 
-            mockedRuleBuilder.Protected().SetupGet<List<Guid>>("RuleActionIdentifiers")
+            mockedRuleBuilder.Protected().SetupGet<List<object>>("RuleActionIdentifiers")
                 .Returns(builderActions);
 
             var subjectUnderTest = mockedRuleBuilder.Object;

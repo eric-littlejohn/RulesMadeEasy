@@ -23,14 +23,8 @@ namespace RulesMadeEasy.Core.Tests
         /// <remarks>Used for Unit testing</remarks>
         private class RulesMadeEasyEngine_PublicWrapper : RulesMadeEasyEngine
         {
-            public RulesMadeEasyEngine_PublicWrapper(IServiceProvider serviceProvider)
-                : this(serviceProvider, serviceProvider.GetService<IValueEvaluatorFactory>(), serviceProvider.GetService<IActionFactory>())
-            {
-
-            }
-
-            public RulesMadeEasyEngine_PublicWrapper(IServiceProvider serviceProvider, IValueEvaluatorFactory valueFactory, IActionFactory actionFactory)
-                : base(serviceProvider, valueFactory, actionFactory)
+            public RulesMadeEasyEngine_PublicWrapper(IValueEvaluatorFactory valueFactory, IActionFactory actionFactory)
+                : base(valueFactory, actionFactory)
             {
                 
             }
@@ -69,22 +63,17 @@ namespace RulesMadeEasy.Core.Tests
             _fixture = fixture;
         }
 
-        [Fact]
-        public void Ctor_NoServiceProvider_Throws()
-        {
-            Assert.Throws<ArgumentNullException>(() => new RulesMadeEasyEngine(null, Mock.Of<IValueEvaluatorFactory>(), Mock.Of<IActionFactory>()));
-        }
 
         [Fact]
         public void Ctor_NoValueEvaluatorFactory_Throws()
         {
-            Assert.Throws<ArgumentNullException>(() => new RulesMadeEasyEngine(Mock.Of<IServiceProvider>(), null, Mock.Of<IActionFactory>()));
+            Assert.Throws<ArgumentNullException>(() => new RulesMadeEasyEngine(null, Mock.Of<IActionFactory>()));
         }
 
         [Fact]
         public void Ctor_NoActionFactory_Throws()
         {
-            Assert.Throws<ArgumentNullException>(() => new RulesMadeEasyEngine(Mock.Of<IServiceProvider>(), Mock.Of<IValueEvaluatorFactory>(), null));
+            Assert.Throws<ArgumentNullException>(() => new RulesMadeEasyEngine(Mock.Of<IValueEvaluatorFactory>(), null));
         }
 
         #region Rule Evaluation Tests
@@ -96,10 +85,7 @@ namespace RulesMadeEasy.Core.Tests
         [Fact]
         public async void EvaluateCondition_NullCondition_Throws()
         {
-            IServiceProvider serviceProvider =
-                _fixture.CreateEngineServiceProvider(_fixture.CreateValueFactory(), _fixture.CreateActionFactory());
-
-            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(serviceProvider);
+            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(_fixture.CreateValueFactory(), _fixture.CreateActionFactory());
 
             var raisedExc = await Assert.ThrowsAsync<ConditionEvaluationException>(() =>
                 subjectUnderTest.EvaluateCondition(null));
@@ -111,10 +97,7 @@ namespace RulesMadeEasy.Core.Tests
         [Fact]
         public async void EvaluateCondition_UnknownConditionType_Fails()
         {
-            IServiceProvider serviceProvider =
-                _fixture.CreateEngineServiceProvider(_fixture.CreateValueFactory(), _fixture.CreateActionFactory());
-
-            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(serviceProvider);
+            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(_fixture.CreateValueFactory(), _fixture.CreateActionFactory());
 
             var result = await subjectUnderTest.EvaluateCondition(Mock.Of<ICondition>());
 
@@ -132,11 +115,7 @@ namespace RulesMadeEasy.Core.Tests
                 [typeof(int)] = _fixture.CreateValueEvaluator(true)             
             };
 
-            IServiceProvider serviceProvider =
-                _fixture.CreateEngineServiceProvider(_fixture.CreateValueFactory(valueEvaluators),
-                    _fixture.CreateActionFactory());
-
-            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(serviceProvider);
+            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(_fixture.CreateValueFactory(valueEvaluators), _fixture.CreateActionFactory());
 
             var leftOperand = GenerateValueCondition(ConditionOperator.Equal, 2, 2);
 
@@ -167,11 +146,7 @@ namespace RulesMadeEasy.Core.Tests
                 })
             };
 
-            IServiceProvider serviceProvider =
-                _fixture.CreateEngineServiceProvider(_fixture.CreateValueFactory(valueEvaluators),
-                    _fixture.CreateActionFactory());
-
-            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(serviceProvider);
+            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(_fixture.CreateValueFactory(valueEvaluators), _fixture.CreateActionFactory());
 
             //Expected true condition. 
             var leftOperand = GenerateValueCondition(ConditionOperator.Equal, 2, 2);
@@ -209,11 +184,7 @@ namespace RulesMadeEasy.Core.Tests
                 })
             };
 
-            IServiceProvider serviceProvider =
-                _fixture.CreateEngineServiceProvider(_fixture.CreateValueFactory(valueEvaluators),
-                    _fixture.CreateActionFactory());
-
-            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(serviceProvider);
+            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(_fixture.CreateValueFactory(valueEvaluators), _fixture.CreateActionFactory());
 
             //False Condition
             var leftOperand = GenerateValueCondition(ConditionOperator.Equal, 1, 2);
@@ -248,11 +219,7 @@ namespace RulesMadeEasy.Core.Tests
                 [typeof(int)] = _fixture.CreateValueEvaluator(false)
             };
 
-            IServiceProvider serviceProvider =
-                _fixture.CreateEngineServiceProvider(_fixture.CreateValueFactory(valueEvaluators),
-                    _fixture.CreateActionFactory());
-
-            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(serviceProvider);
+            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(_fixture.CreateValueFactory(valueEvaluators), _fixture.CreateActionFactory());
 
             //Expected false condition. 
             var leftOperand = GenerateValueCondition(ConditionOperator.Equal, 2, 1);
@@ -276,11 +243,7 @@ namespace RulesMadeEasy.Core.Tests
         [Fact]
         public async void EvaluateCondition_ValueCondition_MissingLeftOperand_Fails()
         {
-            IServiceProvider serviceProvider =
-                _fixture.CreateEngineServiceProvider(_fixture.CreateValueFactory(),
-                    _fixture.CreateActionFactory());
-
-            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(serviceProvider);
+            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(_fixture.CreateValueFactory(), _fixture.CreateActionFactory());
 
             var valueConditon = new ValueCondition(ConditionOperator.Equal, null, new DataValue("SomeKey", 1));
 
@@ -295,11 +258,7 @@ namespace RulesMadeEasy.Core.Tests
         [Fact]
         public async void EvaluateCondition_ValueCondition_MissingRightOperand_Fails()
         {
-            IServiceProvider serviceProvider =
-                _fixture.CreateEngineServiceProvider(_fixture.CreateValueFactory(),
-                    _fixture.CreateActionFactory());
-
-            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(serviceProvider);
+            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(_fixture.CreateValueFactory(), _fixture.CreateActionFactory());
 
             var valueConditon = new ValueCondition(ConditionOperator.Equal, new DataValue("SomeKey", 1), null);
 
@@ -314,11 +273,7 @@ namespace RulesMadeEasy.Core.Tests
         [Fact]
         public async void EvaluateCondition_ValueCondition_MissingValueType_Fails()
         {
-            IServiceProvider serviceProvider =
-                _fixture.CreateEngineServiceProvider(_fixture.CreateValueFactory(),
-                    _fixture.CreateActionFactory());
-
-            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(serviceProvider);
+            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(_fixture.CreateValueFactory(), _fixture.CreateActionFactory());
 
             var valueConditon = new ValueCondition(ConditionOperator.Equal, new DataValue("SomeKey", null), 
                 new DataValue("SomeKey", null));
@@ -334,11 +289,7 @@ namespace RulesMadeEasy.Core.Tests
         [Fact]
         public async void EvaluateCondition_ValueCondition_ValueTypeMismatch_Fails()
         {
-            IServiceProvider serviceProvider =
-                _fixture.CreateEngineServiceProvider(_fixture.CreateValueFactory(),
-                    _fixture.CreateActionFactory());
-
-            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(serviceProvider);
+            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(_fixture.CreateValueFactory(), _fixture.CreateActionFactory());
 
             var valueConditon = new ValueCondition(ConditionOperator.Equal, new DataValue("SomeKey", 1),
                 new DataValue("SomeKey", "1"));
@@ -354,11 +305,7 @@ namespace RulesMadeEasy.Core.Tests
         [Fact]
         public async void EvaluateCondition_ValueCondition_MissingValueEvaluator_Fails()
         {
-            IServiceProvider serviceProvider =
-                _fixture.CreateEngineServiceProvider(_fixture.CreateValueFactory(),
-                    _fixture.CreateActionFactory());
-
-            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(serviceProvider);
+            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(_fixture.CreateValueFactory(), _fixture.CreateActionFactory());
 
             var valueConditon = new ValueCondition(ConditionOperator.Equal, new DataValue("SomeKey", 1),
                 new DataValue("SomeKey", 1));
@@ -392,11 +339,7 @@ namespace RulesMadeEasy.Core.Tests
                 })
             };
 
-            IServiceProvider serviceProvider =
-                _fixture.CreateEngineServiceProvider(_fixture.CreateValueFactory(valueEvaluators),
-                    _fixture.CreateActionFactory());
-
-            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(serviceProvider);
+            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(_fixture.CreateValueFactory(valueEvaluators), _fixture.CreateActionFactory());
 
             var leftDataValue = new DataValue("SomeKey", val1);
             var rightDataValue = new DataValue("SomeKey", val2);
@@ -434,11 +377,7 @@ namespace RulesMadeEasy.Core.Tests
                 [typeof(int)] = _fixture.CreateValueEvaluator(evalResults)
             };
 
-            IServiceProvider serviceProvider =
-                _fixture.CreateEngineServiceProvider(_fixture.CreateValueFactory(valueEvaluators),
-                    _fixture.CreateActionFactory());
-
-            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(serviceProvider);
+            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(_fixture.CreateValueFactory(valueEvaluators), _fixture.CreateActionFactory());
 
             var leftDataValue = new DataValue("SomeKey", val1);
             var rightDataValue = new DataValue("SomeKey", val2);
@@ -462,24 +401,21 @@ namespace RulesMadeEasy.Core.Tests
             var actionId = Guid.NewGuid();
             bool actionFired = false;
             var actionFactory = _fixture.CreateActionFactory(
-                new System.Collections.Concurrent.ConcurrentDictionary<Guid, Func<IServiceProvider, IRulesMadeEasyEngine, IEnumerable<IDataValue>, IAction>>
+                new System.Collections.Concurrent.ConcurrentDictionary<object, Func<IRulesMadeEasyEngine, IEnumerable<IDataValue>, IAction>>
                 {
-                    [actionId] = (services, engineInstance, dataValues) => new AnonymousAction(services, engineInstance, dataValues, 
-                        async (provider, instance, values) => { actionFired = true; })
+                    [actionId] = (engineInstance, dataValues) => new AnonymousAction(engineInstance, dataValues, 
+                        async (instance, values) => { actionFired = true; })
                 });
 
-            IServiceProvider serviceProvider =
-                _fixture.CreateEngineServiceProvider(_fixture.CreateValueFactory(),
+            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(_fixture.CreateValueFactory(),
                     actionFactory);
-
-            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(serviceProvider);
 
             var result = await subjectUnderTest.ExecuteRuleAction(RuleEngineEvaluationMode.Production, new List<IDataValue>(),
                 actionId, true);
 
             Assert.False(actionFired, "Action fired when it shouldnt have");
             Assert.NotNull(result);
-            Assert.Equal(actionId, result.ActionId);
+            Assert.Equal(actionId, result.ActionKey);
             Assert.False(result.ActionExecutedSuccessfully);
             Assert.False(result.ActionRan);
         }
@@ -490,17 +426,14 @@ namespace RulesMadeEasy.Core.Tests
             var actionId = Guid.NewGuid();
             var actionFactory = _fixture.CreateActionFactory();
 
-            IServiceProvider serviceProvider =
-                _fixture.CreateEngineServiceProvider(_fixture.CreateValueFactory(),
+            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(_fixture.CreateValueFactory(),
                     actionFactory);
-
-            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(serviceProvider);
 
             var result = await subjectUnderTest.ExecuteRuleAction(RuleEngineEvaluationMode.Production, new List<IDataValue>(),
                 actionId, false);
             
             Assert.NotNull(result);
-            Assert.Equal(actionId, result.ActionId);
+            Assert.Equal(actionId, result.ActionKey);
             Assert.False(result.ActionExecutedSuccessfully);
             Assert.False(result.ActionRan);
             Assert.NotNull(result.Exception);
@@ -513,26 +446,23 @@ namespace RulesMadeEasy.Core.Tests
             var actionId = Guid.NewGuid();
             bool actionFired = false;
             var actionFactory = _fixture.CreateActionFactory(
-                new System.Collections.Concurrent.ConcurrentDictionary<Guid, Func<IServiceProvider, IRulesMadeEasyEngine, IEnumerable<IDataValue>, IAction>>
+                new System.Collections.Concurrent.ConcurrentDictionary<object, Func<IRulesMadeEasyEngine, IEnumerable<IDataValue>, IAction>>
                 {
-                    [actionId] = (provider, engineInstance, dataValues) => new AnonymousAction(provider, engineInstance, dataValues,
-                        async (services, instance, values) => {
+                    [actionId] = (engineInstance, dataValues) => new AnonymousAction(engineInstance, dataValues,
+                        async (instance, values) => {
                             actionFired = true;
                             throw new Exception("ExpectedException");
                         })
                 });
 
-            IServiceProvider serviceProvider =
-                _fixture.CreateEngineServiceProvider(_fixture.CreateValueFactory(),
+            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(_fixture.CreateValueFactory(),
                     actionFactory);
-
-            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(serviceProvider);
 
             var result = await subjectUnderTest.ExecuteRuleAction(RuleEngineEvaluationMode.Production, new List<IDataValue>(),
                 actionId, false);
 
             Assert.NotNull(result);
-            Assert.Equal(actionId, result.ActionId);
+            Assert.Equal(actionId, result.ActionKey);
             Assert.True(actionFired, "Action did not fire when it should have");
             Assert.False(result.ActionExecutedSuccessfully);
             Assert.True(result.ActionRan);
@@ -546,10 +476,10 @@ namespace RulesMadeEasy.Core.Tests
             var actionId = Guid.NewGuid();
             bool actionFired = false;
             var actionFactory = _fixture.CreateActionFactory(
-                new System.Collections.Concurrent.ConcurrentDictionary<Guid, Func<IServiceProvider, IRulesMadeEasyEngine, IEnumerable<IDataValue>, IAction>>
+                new System.Collections.Concurrent.ConcurrentDictionary<object, Func<IRulesMadeEasyEngine, IEnumerable<IDataValue>, IAction>>
                 {
-                    [actionId] = (provider, engineInstance, dataValues) => new AnonymousAction(provider, engineInstance, dataValues, 
-                        async (services, instance, values) => {
+                    [actionId] = (engineInstance, dataValues) => new AnonymousAction(engineInstance, dataValues, 
+                        async (instance, values) => {
                             actionFired = true;
                         })
                 });
@@ -558,14 +488,15 @@ namespace RulesMadeEasy.Core.Tests
                 _fixture.CreateEngineServiceProvider(_fixture.CreateValueFactory(),
                     actionFactory);
 
-            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(serviceProvider);
+            var subjectUnderTest = new RulesMadeEasyEngine_PublicWrapper(_fixture.CreateValueFactory(),
+                    actionFactory);
 
             var result = await subjectUnderTest.ExecuteRuleAction(RuleEngineEvaluationMode.Production, new List<IDataValue>(),
                 actionId, false);
 
             Assert.NotNull(result);
             Assert.Null(result.Exception);
-            Assert.Equal(actionId, result.ActionId);
+            Assert.Equal(actionId, result.ActionKey);
             Assert.True(actionFired, "Action did not fire when it should have");
             Assert.True(result.ActionExecutedSuccessfully);
             Assert.True(result.ActionRan);

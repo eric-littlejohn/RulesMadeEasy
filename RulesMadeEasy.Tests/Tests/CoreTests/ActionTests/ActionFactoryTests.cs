@@ -24,15 +24,15 @@ namespace RulesMadeEasy.Core.Tests
             var actionId = Guid.NewGuid();
             var actionToRegister = Mock.Of<IAction>();
 
-            var backingDictionary = new ConcurrentDictionary<Guid, Func<IServiceProvider, IRulesMadeEasyEngine, IEnumerable<IDataValue>, IAction>>
+            var backingDictionary = new ConcurrentDictionary<object, ActionDescriptor>
             {
-                [actionId] = (services, instance, dataValues) => actionToRegister
+                [actionId] = new ActionDescriptor(Mock.Of<IServiceProvider>(), actionId, typeof(TypeMappedAction))
             };
 
             var subjectUnderTest = GetActionFactory(backingDictionary);
 
             var raisedExc = Assert.Throws<ActionExecutionException>(() =>
-                subjectUnderTest.RegisterAction(actionId, (services, engine, dataValues) => actionToRegister));
+                subjectUnderTest.RegisterAction(actionId, typeof(TypeMappedAction), (engine, dataValues) => actionToRegister));
 
             Assert.Equal(ActionExecutionException.ExceptionCause.ActionAlreadyRegistered, raisedExc.Cause);
         }
@@ -40,30 +40,30 @@ namespace RulesMadeEasy.Core.Tests
         [Fact]
         public void RegisterAction_Success()
         {
-            var backingDictionary = new ConcurrentDictionary<Guid, Func<IServiceProvider, IRulesMadeEasyEngine, IEnumerable<IDataValue>, IAction>>();
+            var backingDictionary = new ConcurrentDictionary<object, ActionDescriptor>();
 
             var subjectUnderTest = GetActionFactory(backingDictionary);
-
+            var actionConcreteType = typeof(TypeMappedAction);
             var actionId = Guid.NewGuid();
-            var actionToRegister = Mock.Of<IAction>();
 
-            subjectUnderTest.RegisterAction(actionId, (services, engine, dataValues) => actionToRegister);
+            subjectUnderTest.RegisterAction(actionId, actionConcreteType, (engine, dataValues) => Mock.Of<IAction>());
 
             Assert.Collection(backingDictionary,
                 kvpAction => {
                     Assert.Equal(actionId, kvpAction.Key);
-                    Assert.Same(actionToRegister, kvpAction.Value?.Invoke(Mock.Of<IServiceProvider>(), Mock.Of<IRulesMadeEasyEngine>(), new List<IDataValue>()));
+                    Assert.Equal(actionId, kvpAction.Value.ActionKey);
+                    Assert.Equal(actionConcreteType, kvpAction.Value.ActionConcreteType);
                 });
         }
 
         [Fact]
         public void GetActionInstance_NoMatchingId_ReturnsNull()
         {
-            var backingDictionary = new ConcurrentDictionary<Guid, Func<IServiceProvider, IRulesMadeEasyEngine, IEnumerable<IDataValue>, IAction>>();
+            var backingDictionary = new ConcurrentDictionary<object, Func<IRulesMadeEasyEngine, IEnumerable<IDataValue>, IAction>>();
 
             var subjectUnderTest = _fixture.CreateActionFactory(backingDictionary);
 
-            var retrievedAction = subjectUnderTest.GetActionInstance(Guid.NewGuid(), Mock.Of<IServiceProvider>(), Mock.Of<IRulesMadeEasyEngine>(), new List<IDataValue>());
+            var retrievedAction = subjectUnderTest.GetActionInstance(Guid.NewGuid(), Mock.Of<IRulesMadeEasyEngine>(), new List<IDataValue>());
 
             Assert.Null(retrievedAction);
         }
@@ -75,9 +75,9 @@ namespace RulesMadeEasy.Core.Tests
             var actionToRegister = Mock.Of<IAction>();
             bool instanceLogicCalled = false;
 
-            var backingDictionary = new ConcurrentDictionary<Guid, Func<IServiceProvider, IRulesMadeEasyEngine, IEnumerable<IDataValue>, IAction>>
+            var backingDictionary = new ConcurrentDictionary<object, Func<IRulesMadeEasyEngine, IEnumerable<IDataValue>, IAction>>
             {
-                [actionId] = (services, instance, values) =>
+                [actionId] = (instance, values) =>
                     {
                         instanceLogicCalled = true;
                         return actionToRegister;
@@ -86,20 +86,20 @@ namespace RulesMadeEasy.Core.Tests
 
             var subjectUnderTest = _fixture.CreateActionFactory(backingDictionary);
 
-            var retrievedAction = subjectUnderTest.GetActionInstance(actionId, Mock.Of<IServiceProvider>(), Mock.Of<IRulesMadeEasyEngine>(), new List<IDataValue>());
+            var retrievedAction = subjectUnderTest.GetActionInstance(actionId, Mock.Of<IRulesMadeEasyEngine>(), new List<IDataValue>());
 
             Assert.NotNull(retrievedAction);
             Assert.True(instanceLogicCalled, "Instance logic was not called");
             Assert.Same(actionToRegister, retrievedAction);
         }
 
-        private IActionFactory GetActionFactory(ConcurrentDictionary<Guid, Func<IServiceProvider, IRulesMadeEasyEngine, IEnumerable<IDataValue>, IAction>> backingDictionary = null)
+        private IActionFactory GetActionFactory(ConcurrentDictionary<object, ActionDescriptor> backingDictionary = null)
         {
-            backingDictionary = backingDictionary ?? new ConcurrentDictionary<Guid, Func<IServiceProvider, IRulesMadeEasyEngine, IEnumerable<IDataValue>, IAction>>();
+            backingDictionary = backingDictionary ?? new ConcurrentDictionary<object, ActionDescriptor>();
 
-            var mockedFactory = new Mock<ActionFactory>();
+            var mockedFactory = new Mock<ActionFactory>(Mock.Of<IServiceProvider>());
 
-            mockedFactory.Protected().SetupGet<ConcurrentDictionary<Guid, Func<IServiceProvider, IRulesMadeEasyEngine, IEnumerable<IDataValue>, IAction>>>("RegisteredActions")
+            mockedFactory.Protected().SetupGet<ConcurrentDictionary<object, ActionDescriptor>>("RegisteredActions")
                 .Returns(backingDictionary);
 
             return mockedFactory.Object;

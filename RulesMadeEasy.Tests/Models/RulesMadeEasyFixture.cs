@@ -28,18 +28,18 @@ namespace RulesMadeEasy.Core.Tests
             return mockedFactory.Object;
         }
 
-        public IActionFactory CreateActionFactory(ConcurrentDictionary<Guid, Func<IServiceProvider, IRulesMadeEasyEngine, IEnumerable<IDataValue>, IAction>> backingDictionary = null,
+        public IActionFactory CreateActionFactory(ConcurrentDictionary<object, Func<IRulesMadeEasyEngine, IEnumerable<IDataValue>, IAction>> backingDictionary = null,
             Action<Mock<IActionFactory>> additionalMockingLogic = null)
         {
-            backingDictionary = backingDictionary ?? new ConcurrentDictionary<Guid, Func<IServiceProvider, IRulesMadeEasyEngine, IEnumerable<IDataValue>, IAction>>();
+            backingDictionary = backingDictionary ?? new ConcurrentDictionary<object, Func<IRulesMadeEasyEngine, IEnumerable<IDataValue>, IAction>>();
 
             var mockedFactory = new Mock<IActionFactory>();
 
-            mockedFactory.Setup(m => m.GetActionInstance(It.IsAny<Guid>(), It.IsAny<IServiceProvider>(), It.IsAny<IRulesMadeEasyEngine>(), It.IsAny<IEnumerable<IDataValue>>()))
-                .Returns<Guid, IServiceProvider, IRulesMadeEasyEngine, IEnumerable<IDataValue>>((id, services, instance, values) =>
+            mockedFactory.Setup(m => m.GetActionInstance(It.IsAny<Guid>(), It.IsAny<IRulesMadeEasyEngine>(), It.IsAny<IEnumerable<IDataValue>>()))
+                .Returns<object, IRulesMadeEasyEngine, IEnumerable<IDataValue>>((id, instance, values) =>
                 {
                     backingDictionary.TryGetValue(id, out var actionCreationLogic);
-                    return actionCreationLogic?.Invoke(services, instance, values);
+                    return actionCreationLogic?.Invoke(instance, values);
                 });
 
             additionalMockingLogic?.Invoke(mockedFactory);
